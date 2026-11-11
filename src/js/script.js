@@ -7,41 +7,32 @@ const card = document.getElementById("card")
 const loading = document.getElementById("loading");
 const previsionsContainer = document.getElementById("previsions");
 
-form.addEventListener("submit", async event =>{
-    
+form.addEventListener("submit", async event => {
     event.preventDefault();
+    const ville = villechoisi.value.trim();
 
-    const ville = villechoisi.value;
+    if (ville) {
+        loading.classList.remove("hidden");
 
-    if(ville){
-        loading.classList.remove("hidden")
+        card.classList.add("hidden");
+        previsionsContainer.classList.add("hidden");
 
-        try{
+        try {
             const data = await getweatherdata(ville);
             displayweather(data);
 
-             const previsions = await getprevisions(ville);
+            const previsions = await getprevisions(ville);
             displayprevisions(previsions);
-        }
-
-        catch(error){
+        } catch (error) {
             console.error(error);
-            displayerror(error.message)
+            displayerror(error.message);
+        } finally {
+            loading.classList.add("hidden");
         }
-
-        finally{
-            loading.classList.add("hidden")
-        }
-
+    } else {
+        displayerror("Veuillez entrer une ville valide");
     }
-
-    else{
-        displayerror("Entrer une valide ville")
-    }
-
-
-
-})
+});
 
 
 async function getweatherdata(ville) {
@@ -143,16 +134,19 @@ console.log(data);
 }
 
 
-function displayerror(message){
-
+function displayerror(message) {
+    previsionsContainer.classList.add("hidden");
+    
     card.classList.remove("hidden");
-
+    card.classList.remove("flex");
+    
     const errordisplay = document.createElement("p");
-
     errordisplay.textContent = message;
     
-    card.textContent = ""
-    card.appendChild(errordisplay)
+    card.textContent = "";
+    card.appendChild(errordisplay);
+    
+    errordisplay.className = "text-red-600 font-semibold text-center";
 }
 
 
@@ -163,7 +157,7 @@ async function getprevisions(ville){
      const response = await fetch(preurl)
  
     if(! response.ok){
-        throw new Error ("Impossible de récupérer les données météorologiques");
+        throw new Error ("Donnée indisponible");
     }
     return await response.json();
 }
@@ -171,22 +165,32 @@ async function getprevisions(ville){
 
 
 function displayprevisions(data){
-    const prevision = data.list[0];
 
- const {
-        dt_txt,
-        main: { temp },
-        weather: [{ id }]
-    } = prevision;
+    previsionsContainer.textContent=""
 
-    console.log(dt_txt);
-    console.log(temp);
-    console.log(id);
+    previsionsContainer.classList.remove("hidden")
+        
+const dates = [];
 
-    const weather = WEATHER_CODES[id];
-    const icon = weather ? weather.icon : "";
+data.list.forEach(prevision => {
 
-    const precard = document.createElement("div");
+    const date = prevision.dt_txt.split(" ")[0];
+
+    if (!dates.includes(date)) {
+
+        dates.push(date);
+
+        const {
+            dt_txt,
+            main: { temp, temp_min, temp_max },
+            weather: [{ id }]
+        } = prevision;
+
+        const weather = WEATHER_CODES[id];
+        const icon = weather ? weather.icon : "";
+
+         const precard = document.createElement("div");
+    precard.className = "bg-white/90 rounded-2xl p-5 shadow-lg flex flex-col items-center gap-3";
 
      const dateDisplay = document.createElement("p");
     dateDisplay.textContent = dt_txt;
@@ -199,12 +203,35 @@ function displayprevisions(data){
     const tempDisplay = document.createElement("p");
     tempDisplay.textContent = `${temp.toFixed(1)}°C`;
 
-    
-    card.appendChild(dateDisplay);
-    card.appendChild(iconDisplay);
-    card.appendChild(tempDisplay);
+    const minDisplay = document.createElement("p")
+    minDisplay.textContent = `Min : ${temp_min}°C`
+
+    const maxDisplay = document.createElement("p")
+    maxDisplay.textContent = `Max : ${temp_max}°C`
 
     
-    previsionsContainer.appendChild(precard);
+    precard.appendChild(dateDisplay);
+    precard.appendChild(iconDisplay);
+    precard.appendChild(tempDisplay);
+    precard.appendChild(minDisplay);
+    precard.appendChild(maxDisplay);
 
+    minDisplay.className = "text-sm text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full";
+
+    maxDisplay.className = "text-sm text-red-600 font-semibold bg-red-50 px-3 py-1 rounded-full";
+
+    tempDisplay.className = "font-bold font-black tracking-tighter text-blue-600 my-1 text-[25px]"
+
+    iconDisplay.className = "my-1 drop-shadow-md text-[40px]"
+
+    dateDisplay.className = "font-bold"
+
+
+      
+
+        
+        previsionsContainer.appendChild(precard);
+    }
+
+});
 }
