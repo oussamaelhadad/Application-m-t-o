@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Météo et les prévisions des prochains jours">
+
+    <meta name="author" content="Youcode">
+    <meta name="robots" content="index, follow">
+
+    <title>Youcode meteo app | 2026</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="./src/js/script.js" defer></script>
+    <link rel="stylesheet" href="src/styles/main.css">
+</head>
+<body>
+
+   <header class="bg-gradient-to-r from-sky-600 via-sky-500 to-cyan-400 shadow-lg">
+    <div class="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-5 md:flex-row md:items-center md:justify-center">
+
+
+        <a href="./" class="flex items-center gap-3 text-white">
+        <span class="flex h-11 w-11 items-center justify-center rounded-full bg-white/20 ring-1 ring-white/40">
+
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6" aria-hidden="true">
+            <circle cx="8" cy="8" r="3" />
+            <path d="M8 1.5v1.5M8 13v1M1.5 8H3M13 8h-1M3.4 3.4l1 1M12.6 3.4l-1 1" />
+            <path d="M9 20h8a3.5 3.5 0 0 0 .5-6.96A5 5 0 0 0 8 14.5 2.75 2.75 0 0 0 9 20z" />
+          </svg>
+        </span>
+
+        <div class="leading-tight">
+          <h1 class="text-xl font-bold tracking-tight">Météo Express</h1>
+          <p class="text-xs text-sky-50">Météo actuelle et prévisions</p>
+        </div>
+      </a>
+    </header>
+
+    <main class="bg-[url('./assests/img/metio-bg.jpg')] bg-cover bg-center h-screen w-full">
+    
+        <div>
+        <h1 class="p-[14px] font-bold flex justify-center text-[24px] text-amber-50">Prévisions météorologiques précises et claires .</h1>
+    </div>
+    
+    <form id="form" class="font-bold p-[20px] flex justify-center items-center">
+        <input id="ville-input" type="text" class="ville border-2 border-sky-600 w-[300px] h-[50px]" placeholder="Entrez la ville de votre choix Ex: Nador">
+     <button id="btn-recherche" type="submit" class="bg-amber-400 m-3 w-[150px] h-[50px] border-2 border-sky-600 rounded-lg text-white font-bold">
+    Rechercher la ville</button>
+    </form>
+
+    <p id="loading" class="hidden text-[40px] flex justify-center">Chargement...</p>
+
+    <div id="card" class="hidden mx-auto mt-8 w-[90%] max-w-md flex flex-col items-center justify-center p-6 rounded-3xl border border-white/40 bg-white/80 shadow-2xl backdrop-blur-md gap-2"></div>
+
+</main>
+</body>
+</html>
