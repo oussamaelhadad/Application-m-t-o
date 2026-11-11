@@ -5,6 +5,7 @@ const form = document.getElementById("form")
 const villechoisi = document.getElementById("ville-input")
 const card = document.getElementById("card")
 const loading = document.getElementById("loading");
+const previsionsContainer = document.getElementById("previsions");
 
 form.addEventListener("submit", async event =>{
     
@@ -18,6 +19,9 @@ form.addEventListener("submit", async event =>{
         try{
             const data = await getweatherdata(ville);
             displayweather(data);
+
+             const previsions = await getprevisions(ville);
+            displayprevisions(previsions);
         }
 
         catch(error){
@@ -42,7 +46,7 @@ form.addEventListener("submit", async event =>{
 
 async function getweatherdata(ville) {
 
- const url = `https://api.openweathermap.org/data/2.5/weather?q=${ville}&appid=${apikey}&units=metric`;
+ const url = `https://api.openweathermap.org/data/2.5/weather?q=${ville}&appid=${apikey}&units=metric&lang=fr`;
 
  const response = await fetch(url)
  
@@ -151,6 +155,56 @@ function displayerror(message){
     card.appendChild(errordisplay)
 }
 
-function getprevisions(){
+
+async function getprevisions(ville){
     
+    const preurl = `https://api.openweathermap.org/data/2.5/forecast?q=${ville}&appid=${apikey}&units=metric&lang=fr`
+
+     const response = await fetch(preurl)
+ 
+    if(! response.ok){
+        throw new Error ("Impossible de récupérer les données météorologiques");
+    }
+    return await response.json();
+}
+
+
+
+function displayprevisions(data){
+    const prevision = data.list[0];
+
+ const {
+        dt_txt,
+        main: { temp },
+        weather: [{ id }]
+    } = prevision;
+
+    console.log(dt_txt);
+    console.log(temp);
+    console.log(id);
+
+    const weather = WEATHER_CODES[id];
+    const icon = weather ? weather.icon : "";
+
+    const precard = document.createElement("div");
+
+     const dateDisplay = document.createElement("p");
+    dateDisplay.textContent = dt_txt;
+
+    
+    const iconDisplay = document.createElement("p");
+    iconDisplay.textContent = icon;
+
+   
+    const tempDisplay = document.createElement("p");
+    tempDisplay.textContent = `${temp.toFixed(1)}°C`;
+
+    
+    card.appendChild(dateDisplay);
+    card.appendChild(iconDisplay);
+    card.appendChild(tempDisplay);
+
+    
+    previsionsContainer.appendChild(precard);
+
 }
