@@ -166,6 +166,9 @@ async function getprevisions(ville){
 
 function displayprevisions(data){
 
+    console.log(data);
+    
+
     previsionsContainer.textContent=""
 
     previsionsContainer.classList.remove("hidden")
@@ -192,8 +195,15 @@ data.list.forEach(prevision => {
          const precard = document.createElement("div");
     precard.className = "bg-white/90 rounded-2xl p-5 shadow-lg flex flex-col items-center gap-3";
 
+    const dateobj = new Date(dt_txt);
+        const options = { 
+            weekday: 'long',  
+            day: 'numeric', 
+            month: 'long'    
+        };
+
      const dateDisplay = document.createElement("p");
-    dateDisplay.textContent = dt_txt;
+    dateDisplay.textContent = dateobj.toLocaleDateString("fr-FR", options);
 
     
     const iconDisplay = document.createElement("p");
