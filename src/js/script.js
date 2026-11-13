@@ -6,12 +6,15 @@ const villechoisi = document.getElementById("ville-input")
 const card = document.getElementById("card")
 const loading = document.getElementById("loading");
 const previsionsContainer = document.getElementById("previsions");
+let derniereVille = "";
 
-form.addEventListener("submit", async event => {
+form.addEventListener("submit", async event =>{
     event.preventDefault();
-    const ville = villechoisi.value.trim();
 
-    if (ville) {
+    const ville = villechoisi.value.trim();
+    derniereVille = ville;
+
+    if (ville){
         loading.classList.remove("hidden");
 
         card.classList.add("hidden");
@@ -23,29 +26,57 @@ form.addEventListener("submit", async event => {
 
             const previsions = await getprevisions(ville);
             displayprevisions(previsions);
-        } catch (error) {
+        } 
+        
+        catch (error){
             console.error(error);
-            displayerror(error.message);
-        } finally {
+            
+              if (error instanceof TypeError) {
+        displayerror("Erreur de connexion. Vérifiez votre connexion Internet.");
+    } else {
+        displayerror(error.message);
+    }
+            
+
+        }
+         finally{
             loading.classList.add("hidden");
         }
-    } else {
+    } 
+    else{
         displayerror("Veuillez entrer une ville valide");
     }
 });
 
 
-async function getweatherdata(ville) {
+async function getweatherdata(ville){
 
  const url = `https://api.openweathermap.org/data/2.5/weather?q=${ville}&appid=${apikey}&units=metric&lang=fr`;
 
  const response = await fetch(url)
  
-    if(! response.ok){
-        throw new Error ("Impossible de récupérer les données météorologiques");
+ if(! response.ok){
+
+    if (response.status === 404){
+        throw new Error("Ville introuvable");
+
     }
-    return await response.json();
+    else if (response.status === 429){
+        throw new Error("Limite de requêtes atteinte");
+
+    } 
+    else if (response.status >= 500){
+        throw new Error("Service météo indisponible");
+
+    } 
+else{
+        throw new Error("Une erreur est survenue");
 }
+}
+return await response.json();
+}
+   
+
 
 
 function displayweather(data) {
@@ -101,7 +132,7 @@ function displayweather(data) {
 
    const weather = WEATHER_CODES[id];
 
-    const icon = weather.icon;
+    const icon = weather ? weather.icon : "";
 
     emojidisplay.textContent = icon;
     card.appendChild(emojidisplay);
@@ -147,6 +178,19 @@ function displayerror(message) {
     card.appendChild(errordisplay);
     
     errordisplay.className = "text-red-600 font-semibold text-center";
+
+    const reessayerButton = document.createElement("button");
+
+    reessayerButton.textContent = "Réessayer";
+
+    reessayerButton.addEventListener("click", () => {
+    villechoisi.value = derniereVille;
+    form.requestSubmit();
+
+}
+)
+    card.appendChild(reessayerButton);
+    reessayerButton.classList = "bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 cursor-pointer flex justify-center";
 }
 
 
@@ -156,15 +200,33 @@ async function getprevisions(ville){
 
      const response = await fetch(preurl)
  
-    if(! response.ok){
-        throw new Error ("Donnée indisponible");
+   if(! response.ok){
+
+    if (response.status === 404) {
+        throw new Error("Ville introuvable");
+
     }
+    else if (response.status === 429) {
+        throw new Error("Limite de requêtes atteinte");
+
+    } 
+    else if (response.status >= 500) {
+        throw new Error("Service météo indisponible");
+
+    } 
+else {
+        throw new Error("Une erreur est survenue");
+}
+}
     return await response.json();
 }
 
 
 
 function displayprevisions(data){
+
+const preTitel = document.getElementById("previsionsTitel")
+preTitel.classList.remove("hidden")
 
     console.log(data);
     
